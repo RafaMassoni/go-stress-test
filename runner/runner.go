@@ -34,20 +34,20 @@ func RunLoadTest(cfg *config.ConfigParams) TestResults {
 			numRequests++
 		}
 
-		go func(worker int, num int) {
-			defer wg.Done()
-			for j := 0; j < num; j++ {
-				resp, err := http.Get(cfg.Url)
-				if err != nil {
-					fmt.Printf("Request %d/%d para %s => 0\n", j, worker, cfg.Url)
-					statusCodes <- 0
-					continue
-				}
-				statusCodes <- resp.StatusCode
-				fmt.Printf("Request %d/%d para %s => %d\n", j, worker, cfg.Url, resp.StatusCode)
-				resp.Body.Close()
-			}
-		}(i, numRequests)
+			go func(worker int, num int) {
+        			defer wg.Done()
+        			for j := 0; j < num; j++ {
+        				resp, err := http.Get(cfg.Url)
+        				if err != nil {
+        					fmt.Printf("Request %d %d/%d para %s => %d\n", worker, j+1, num, cfg.Url, 0)
+        					statusCodes <- 0
+        					continue
+        				}
+        				statusCodes <- resp.StatusCode
+        				fmt.Printf("Request %d %d/%d para %s => %d\n", worker, j+1, num, cfg.Url, resp.StatusCode)
+        				resp.Body.Close()
+        			}
+        		}(i, numRequests)
 	}
 
 	wg.Wait()
